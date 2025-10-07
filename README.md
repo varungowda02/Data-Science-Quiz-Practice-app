@@ -6,6 +6,10 @@ A **Streamlit-based interactive quiz application** featuring a comprehensive col
 
 ***
 
+### DEPLOYED: https://data-science-quiz-practice-app-4wypprl5njtjruxyq8hggl.streamlit.app/
+
+***
+
 ### Features
 
 - **Topic-wise Quizzes**: Contains categorized quizzes covering key Data Science concepts:
