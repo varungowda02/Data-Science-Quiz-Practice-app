@@ -31,11 +31,13 @@ or try this: https://bit.ly/dsquizapp
 4. **Performance Summary**: See your overall score, percentage, and performance message.
 5. **Try Again/Change Topic**: Use simple buttons to retake quizzes or pick another topic.
 
-<img width="1912" height="932" alt="image" src="https://github.com/user-attachments/assets/ceccbf88-dac3-4b1b-b6b9-8862c098aa52" />
+<img width="1912" height="932" alt="image" src="https://github.com/user-attachments/assets/16e65311-66f7-4e77-96ed-ef80e0ab923e" />
 
-<img width="1912" height="932" alt="image" src="https://github.com/user-attachments/assets/6148db83-7a04-4c9f-b542-0380c4966c68" />
+<img width="1912" height="932" alt="image" src="https://github.com/user-attachments/assets/2655bb88-21c7-4779-b13d-fc94975af28c" />
 
-<img width="1902" height="7578" alt="image" src="https://github.com/user-attachments/assets/221e7034-b575-4598-9c28-94d1c9925c1e" />
+<img width="1910" height="7822" alt="image" src="https://github.com/user-attachments/assets/5fc179ab-06e4-46ca-8921-e08c02cdffd8" />
+
+<img width="1912" height="932" alt="image" src="https://github.com/user-attachments/assets/3218a60a-ee3e-4a4f-b8b9-82b954236453" />
 
 ***
 
