@@ -3769,191 +3769,396 @@ QUIZ_DATA = {
     }
 }
 
-# Initialize session state
-if 'selected_topic' not in st.session_state:
-    st.session_state.selected_topic = None
+# # ---------------------------
+# # SESSION STATE
+# # ---------------------------
+# if 'selected_topic' not in st.session_state:
+#     st.session_state.selected_topic = None
+# if 'answers' not in st.session_state:
+#     st.session_state.answers = {}
+# if 'submitted' not in st.session_state:
+#     st.session_state.submitted = False
+# if 'last_quiz' not in st.session_state:
+#     st.session_state.last_quiz = None  # ✅ Track last attempted quiz
+
+
+# # ---------------------------
+# # HELPER FUNCTIONS
+# # ---------------------------
+# def reset_quiz():
+#     st.session_state.answers = {}
+#     st.session_state.submitted = False
+
+
+# def main():
+#     st.set_page_config(page_title="MCQ Quiz App", page_icon="📝", layout="wide")
+
+#     # --- Custom CSS ---
+#     st.markdown("""
+#         <style>
+#         .correct-answer {background-color: #d4edda; border: 2px solid #28a745; padding: 10px; border-radius: 5px; margin: 5px 0; color: black;}
+#         .wrong-answer {background-color: #f8d7da; border: 2px solid #dc3545; padding: 10px; border-radius: 5px; margin: 5px 0; color: black;}
+#         .score-box {background-color: #e7f3ff; padding: 20px; border-radius: 10px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;}
+#         </style>
+#     """, unsafe_allow_html=True)
+
+#     st.title("📝 MCQ Quiz Application")
+
+#     # ---------------------------
+#     # SIDEBAR
+#     # ---------------------------
+#     with st.sidebar:
+#         st.header("📚 Select Topic")
+
+#         if st.session_state.selected_topic:
+#             if st.button("← Back to Topics"):
+#                 st.session_state.selected_topic = None
+#                 reset_quiz()
+#                 st.rerun()
+
+#             # ✅ Dropdown to switch topics while inside a quiz
+#             st.markdown("### 🔽 Switch Topic")
+#             topic_names = list(QUIZ_DATA.keys())
+#             selected_dropdown = st.selectbox(
+#                 "Go to another topic:",
+#                 topic_names,
+#                 index=topic_names.index(st.session_state.selected_topic) if st.session_state.selected_topic in topic_names else 0
+#             )
+
+#             if selected_dropdown != st.session_state.selected_topic:
+#                 st.session_state.selected_topic = selected_dropdown
+#                 st.session_state.last_quiz = selected_dropdown  # update last quiz
+#                 reset_quiz()
+#                 st.rerun()
+
+#             st.markdown("---")
+
+#         st.info("Select a topic to start the quiz!")
+
+#     # ---------------------------
+#     # MAIN CONTENT AREA
+#     # ---------------------------
+#     if st.session_state.selected_topic is None:
+#         # ✅ Show last attempted quiz
+#         if st.session_state.last_quiz:
+#             last_title = QUIZ_DATA[st.session_state.last_quiz]["title"]
+#             st.success(f"🕓 Last attempted quiz: **{last_title}**")
+
+#         st.subheader("Choose a Quiz Topic")
+#         st.markdown("Click on any topic below to start your quiz:")
+
+#         cols = st.columns(3)
+#         topics = list(QUIZ_DATA.keys())
+
+#         for idx, topic in enumerate(topics):
+#             col = cols[idx % 3]
+#             with col:
+#                 topic_display = topic.replace("_", " ").replace("QA", "").strip()
+#                 if st.button(f"📌 {topic_display}", key=topic, use_container_width=True):
+#                     st.session_state.selected_topic = topic
+#                     st.session_state.last_quiz = topic  # ✅ store last opened quiz
+#                     reset_quiz()
+#                     st.rerun()
+
+#     else:
+#         # Display selected quiz
+#         topic_data = QUIZ_DATA[st.session_state.selected_topic]
+#         st.header(f"🎯 {topic_data['title']}")
+
+#         if not topic_data['questions']:
+#             st.warning("Questions for this topic are coming soon!")
+#             return
+
+#         st.markdown(f"**Total Questions:** {len(topic_data['questions'])}")
+#         st.markdown("---")
+
+#         if not st.session_state.submitted:
+#             with st.form("quiz_form"):
+#                 for idx, q in enumerate(topic_data['questions']):
+#                     st.subheader(f"Question {idx + 1}")
+#                     st.write(q['question'])
+#                     answer = st.radio(
+#                         "Select your answer:",
+#                         options=range(len(q['options'])),
+#                         format_func=lambda x, q=q: q['options'][x],
+#                         key=f"q_{idx}",
+#                         index=None
+#                     )
+#                     if answer is not None:
+#                         st.session_state.answers[idx] = answer
+#                     st.markdown("---")
+
+#                 submitted = st.form_submit_button("Submit Quiz", use_container_width=True)
+#                 if submitted:
+#                     if len(st.session_state.answers) < len(topic_data['questions']):
+#                         st.error("⚠️ Please answer all questions before submitting!")
+#                     else:
+#                         st.session_state.submitted = True
+#                         st.rerun()
+
+#         else:
+#             # Show results
+#             correct_count = 0
+#             total_questions = len(topic_data['questions'])
+
+#             for idx, q in enumerate(topic_data['questions']):
+#                 user_answer = st.session_state.answers.get(idx)
+#                 correct_answer = q['correct']
+#                 is_correct = user_answer == correct_answer
+
+#                 if is_correct:
+#                     correct_count += 1
+
+#                 st.subheader(f"Question {idx + 1}")
+#                 st.write(q['question'])
+
+#                 for opt_idx, option in enumerate(q['options']):
+#                     if opt_idx == correct_answer:
+#                         if opt_idx == user_answer:
+#                             st.markdown(f'<div class="correct-answer">✅ {option} (Your answer - Correct!)</div>', unsafe_allow_html=True)
+#                         else:
+#                             st.markdown(f'<div class="correct-answer">✅ {option} (Correct answer)</div>', unsafe_allow_html=True)
+#                     elif opt_idx == user_answer:
+#                         st.markdown(f'<div class="wrong-answer">❌ {option} (Your answer - Incorrect)</div>', unsafe_allow_html=True)
+#                     else:
+#                         st.markdown(f'<p style="color:#ccc;padding:10px;">⚪ {option}</p>', unsafe_allow_html=True)
+
+#                 with st.expander("📖 Explanation"):
+#                     st.info(q['explanation'])
+
+#                 st.markdown("---")
+
+#             score_percentage = (correct_count / total_questions) * 100
+#             st.markdown(f'<div class="score-box"><span style="color: black;">🎯 Your Score: {correct_count}/{total_questions} ({score_percentage:.1f}%)</span></div>', unsafe_allow_html=True)
+
+#             if score_percentage >= 80:
+#                 st.success("🌟 Excellent work! You have a strong understanding of this topic!")
+#             elif score_percentage >= 60:
+#                 st.info("👍 Good job! Review the explanations to strengthen your knowledge.")
+#             else:
+#                 st.warning("📚 Keep practicing! Review the material and try again.")
+
+#             col1, col2 = st.columns(2)
+#             with col1:
+#                 if st.button("🔄 Retry Quiz", use_container_width=True):
+#                     reset_quiz()
+#                     st.rerun()
+#             with col2:
+#                 if st.button("📚 Choose Another Topic", use_container_width=True):
+#                     st.session_state.selected_topic = None
+#                     reset_quiz()
+#                     st.rerun()
+
+
+# if __name__ == "__main__":
+#     main()
+
+import streamlit as st
+
+# ---------------------------
+# SESSION STATE
+# ---------------------------
+if 'selected_topics' not in st.session_state:
+    st.session_state.selected_topics = []
 if 'answers' not in st.session_state:
     st.session_state.answers = {}
 if 'submitted' not in st.session_state:
     st.session_state.submitted = False
+if 'last_quiz' not in st.session_state:
+    st.session_state.last_quiz = None
 
+
+# ---------------------------
+# HELPER FUNCTIONS
+# ---------------------------
 def reset_quiz():
     st.session_state.answers = {}
     st.session_state.submitted = False
 
+
 def main():
     st.set_page_config(page_title="MCQ Quiz App", page_icon="📝", layout="wide")
-    
-    # Custom CSS for styling
+
+    # --- Custom CSS ---
     st.markdown("""
         <style>
-        .correct-answer {
-            background-color: #d4edda;
-            border: 2px solid #28a745;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px 0;
-            color: black !important;
-        }
-        .wrong-answer {
-            background-color: #f8d7da;
-            border: 2px solid #dc3545;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px 0;
-            color: black !important;
-        }
-        .user-selected {
-            font-weight: bold;
-            background-color: #fff3cd;
-        }
-        .score-box {
-            background-color: #e7f3ff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
+        .correct-answer {background-color: #d4edda; border: 2px solid #28a745; padding: 10px; border-radius: 5px; margin: 5px 0; color: black;}
+        .wrong-answer {background-color: #f8d7da; border: 2px solid #dc3545; padding: 10px; border-radius: 5px; margin: 5px 0; color: black;}
+        .score-box {background-color: #e7f3ff; padding: 20px; border-radius: 10px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;}
         </style>
     """, unsafe_allow_html=True)
-    
+
     st.title("📝 MCQ Quiz Application")
-    
-    # Sidebar for topic selection
+
+    # ---------------------------
+    # SIDEBAR
+    # ---------------------------
     with st.sidebar:
-        st.header("📚 Select Topic")
-        
-        if st.session_state.selected_topic:
-            if st.button("← Back to Topics"):
-                st.session_state.selected_topic = None
+        if st.session_state.selected_topics:
+            if st.button("← Back to Topics", use_container_width=True):
+                st.session_state.selected_topics = []
                 reset_quiz()
                 st.rerun()
-        
-        st.markdown("---")
-        st.info("Select a topic to start the quiz!")
-    
-    # Main content area
-    if st.session_state.selected_topic is None:
-        # Display topic selection
+                
+        st.header("📚 Select Topics")
+
+        topic_names = list(QUIZ_DATA.keys())
+
+        # Buttons for select all / clear all
+        colA, colB = st.columns(2)
+        with colA:
+            if st.button("✅ Select All"):
+                st.session_state.selected_topics = topic_names
+                reset_quiz()
+                st.rerun()
+        with colB:
+            if st.button("🗑️ Clear All"):
+                st.session_state.selected_topics = []
+                reset_quiz()
+                st.rerun()
+
+        # Multiselect topics
+        selected = st.multiselect(
+            "Select one or more topics:",
+            topic_names,
+            default=st.session_state.selected_topics
+        )
+
+        if selected != st.session_state.selected_topics:
+            st.session_state.selected_topics = selected
+            st.session_state.last_quiz = selected
+            reset_quiz()
+            st.rerun()
+
+        if st.session_state.selected_topics:
+            st.markdown("---")
+
+        st.info("You can also click on topics on the home page to start a quiz.")
+
+    # ---------------------------
+    # MAIN CONTENT AREA
+    # ---------------------------
+    if not st.session_state.selected_topics:
+        # ✅ Home Page
+        if st.session_state.last_quiz:
+            last_titles = [QUIZ_DATA[t]['title'] for t in st.session_state.last_quiz]
+            st.success(f"🕓 Last attempted quiz: **{', '.join(last_titles)}**")
+
         st.subheader("Choose a Quiz Topic")
         st.markdown("Click on any topic below to start your quiz:")
-        
-        # Create topic buttons
+
         cols = st.columns(3)
         topics = list(QUIZ_DATA.keys())
-        
+
         for idx, topic in enumerate(topics):
             col = cols[idx % 3]
             with col:
                 topic_display = topic.replace("_", " ").replace("QA", "").strip()
                 if st.button(f"📌 {topic_display}", key=topic, use_container_width=True):
-                    st.session_state.selected_topic = topic
-                    reset_quiz()
-                    st.rerun()
-    
-    else:
-        # Display selected quiz
-        topic_data = QUIZ_DATA[st.session_state.selected_topic]
-        st.header(f"🎯 {topic_data['title']}")
-        
-        if not topic_data['questions']:
-            st.warning("Questions for this topic are coming soon!")
-            return
-        
-        st.markdown(f"**Total Questions:** {len(topic_data['questions'])}")
-        st.markdown("---")
-        
-        # Display questions
-        if not st.session_state.submitted:
-            with st.form("quiz_form"):
-                for idx, q in enumerate(topic_data['questions']):
-                    st.subheader(f"Question {idx + 1}")
-                    st.write(q['question'])
-                    
-                    answer = st.radio(
-                        "Select your answer:",
-                        options=range(len(q['options'])),
-                        format_func=lambda x, q=q: q['options'][x],
-                        key=f"q_{idx}",
-                        index=None
-                    )
-                    
-                    if answer is not None:
-                        st.session_state.answers[idx] = answer
-                    
-                    st.markdown("---")
-                
-                submitted = st.form_submit_button("Submit Quiz", use_container_width=True)
-                
-                if submitted:
-                    if len(st.session_state.answers) < len(topic_data['questions']):
-                        st.error("⚠️ Please answer all questions before submitting!")
-                    else:
-                        st.session_state.submitted = True
-                        st.rerun()
-        
-        else:
-            # Show results
-            correct_count = 0
-            total_questions = len(topic_data['questions'])
-            
-            for idx, q in enumerate(topic_data['questions']):
-                user_answer = st.session_state.answers.get(idx)
-                correct_answer = q['correct']
-                is_correct = user_answer == correct_answer
-                
-                if is_correct:
-                    correct_count += 1
-                
-                st.subheader(f"Question {idx + 1}")
-                st.write(q['question'])
-                
-                # Display options with color coding
-                for opt_idx, option in enumerate(q['options']):
-                    if opt_idx == correct_answer:
-                        # Correct answer - always show in green
-                        if opt_idx == user_answer:
-                            st.markdown(f'<div class="correct-answer" style="color: black;">✅ {option} (Your answer - Correct!)</div>', unsafe_allow_html=True)
-                        else:
-                            st.markdown(f'<div class="correct-answer" style="color: black;">✅ {option} (Correct answer)</div>', unsafe_allow_html=True)
-                    elif opt_idx == user_answer:
-                        # User's wrong answer - show in red
-                        st.markdown(f'<div class="wrong-answer" style="color: black;">❌ {option} (Your answer - Incorrect)</div>', unsafe_allow_html=True)
-                    else:
-                        # Other options - show in white/light gray
-                        st.markdown(f'<p style="color: #cccccc; padding: 10px; margin: 5px 0;">⚪ {option}</p>', unsafe_allow_html=True)
-                
-                # Show explanation
-                with st.expander("📖 Explanation"):
-                    st.info(q['explanation'])
-                
-                st.markdown("---")
-            
-            # Display score
-            score_percentage = (correct_count / total_questions) * 100
-            st.markdown(f'<div class="score-box">🎯 Your Score: {correct_count}/{total_questions} ({score_percentage:.1f}%)</div>', unsafe_allow_html=True)
-            
-            # Performance feedback
-            if score_percentage >= 80:
-                st.success("🌟 Excellent work! You have a strong understanding of this topic!")
-            elif score_percentage >= 60:
-                st.info("👍 Good job! Review the explanations to strengthen your knowledge.")
-            else:
-                st.warning("📚 Keep practicing! Review the material and try again.")
-            
-            # Retry button
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("🔄 Retry Quiz", use_container_width=True):
-                    reset_quiz()
-                    st.rerun()
-            with col2:
-                if st.button("📚 Choose Another Topic", use_container_width=True):
-                    st.session_state.selected_topic = None
+                    st.session_state.selected_topics = [topic]
+                    st.session_state.last_quiz = [topic]
                     reset_quiz()
                     st.rerun()
 
+        return  # Exit here so only home page is shown
+
+    # ---------------------------
+    # COMBINED QUIZ DISPLAY
+    # ---------------------------
+    selected_data = [QUIZ_DATA[t] for t in st.session_state.selected_topics if t in QUIZ_DATA]
+    combined_questions = []
+    for topic in selected_data:
+        for q in topic['questions']:
+            combined_questions.append({**q, 'topic_title': topic['title']})
+
+    if not combined_questions:
+        st.warning("No questions found for the selected topics.")
+        return
+
+    st.header("🎯 Combined Quiz")
+    st.markdown(f"**Selected Topics:** {', '.join([t['title'] for t in selected_data])}")
+    st.markdown(f"**Total Questions:** {len(combined_questions)}")
+    st.markdown("---")
+
+    # ---------------------------
+    # QUIZ QUESTIONS
+    # ---------------------------
+    if not st.session_state.submitted:
+        with st.form("quiz_form"):
+            for idx, q in enumerate(combined_questions):
+                st.subheader(f"{q['topic_title']} — Question {idx + 1}")
+                st.write(q['question'])
+                answer = st.radio(
+                    "Select your answer:",
+                    options=range(len(q['options'])),
+                    format_func=lambda x, q=q: q['options'][x],
+                    key=f"q_{idx}",
+                    index=None
+                )
+                if answer is not None:
+                    st.session_state.answers[idx] = answer
+                st.markdown("---")
+
+            submitted = st.form_submit_button("Submit Quiz", use_container_width=True)
+            if submitted:
+                if len(st.session_state.answers) < len(combined_questions):
+                    st.error("⚠️ Please answer all questions before submitting!")
+                else:
+                    st.session_state.submitted = True
+                    st.rerun()
+
+    else:
+        correct_count = 0
+        total_questions = len(combined_questions)
+
+        for idx, q in enumerate(combined_questions):
+            user_answer = st.session_state.answers.get(idx)
+            correct_answer = q['correct']
+            is_correct = user_answer == correct_answer
+
+            if is_correct:
+                correct_count += 1
+
+            st.subheader(f"{q['topic_title']} — Question {idx + 1}")
+            st.write(q['question'])
+
+            for opt_idx, option in enumerate(q['options']):
+                if opt_idx == correct_answer:
+                    if opt_idx == user_answer:
+                        st.markdown(f'<div class="correct-answer">✅ {option} (Your answer - Correct!)</div>', unsafe_allow_html=True)
+                    else:
+                        st.markdown(f'<div class="correct-answer">✅ {option} (Correct answer)</div>', unsafe_allow_html=True)
+                elif opt_idx == user_answer:
+                    st.markdown(f'<div class="wrong-answer">❌ {option} (Your answer - Incorrect)</div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<p style="color:#ccc;padding:10px;">⚪ {option}</p>', unsafe_allow_html=True)
+
+            with st.expander("📖 Explanation"):
+                st.info(q['explanation'])
+            st.markdown("---")
+
+        score_percentage = (correct_count / total_questions) * 100
+        st.markdown(f'<div class="score-box"><span style="color: black;">🎯 Your Score: {correct_count}/{total_questions} ({score_percentage:.1f}%)</span></div>', unsafe_allow_html=True)
+
+        if score_percentage >= 80:
+            st.success("🌟 Excellent work! You have a strong understanding of these topics!")
+        elif score_percentage >= 60:
+            st.info("👍 Good job! Review the explanations to strengthen your knowledge.")
+        else:
+            st.warning("📚 Keep practicing! Review the material and try again.")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔄 Retry Quiz", use_container_width=True):
+                reset_quiz()
+                st.rerun()
+        with col2:
+            if st.button("🏠 Back to Home", use_container_width=True):
+                st.session_state.selected_topics = []
+                reset_quiz()
+                st.rerun()
+
+
 if __name__ == "__main__":
     main()
+
